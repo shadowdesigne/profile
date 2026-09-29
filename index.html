@@ -3,26 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ثمار الخير - بروفايل</title>
-    
-    <!-- استيراد خط المراعي -->
+    <title>ثمار - بروفايل</title>
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary-color: #800080; 
-            --bg-color: #fdfdfd;
-            /* تحديد عرض الكتاب ليكون مرناً */
-            --book-width: 80vw; 
-            --max-book-width: 380px;
+            --bg-color: #f4f4f9;
+            --book-width: 350px; 
+            --book-height: 480px;
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            margin: 0; 
-            padding: 0; 
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body {
             font-family: 'Almarai', sans-serif;
@@ -30,77 +21,58 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; 
+            overflow-x: hidden;
             width: 100%;
             min-height: 100vh;
         }
 
-        header {
-            text-align: center;
-            padding: 30px 15px;
-            width: 100%;
-        }
-
-        .logo {
-            max-width: 140px;
-            height: auto;
-            margin-bottom: 15px;
-        }
-
+        header { text-align: center; padding: 20px 15px; width: 100%; }
+        .logo { max-width: 120px; height: auto; margin-bottom: 10px; }
         .main-title {
             color: var(--primary-color);
-            font-family: 'Almarai', sans-serif;
             font-weight: 800;
-            font-size: clamp(1.6rem, 6vw, 2.4rem);
-            margin: 0;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
         }
 
-        .works-section {
+        /* حاوية العمل */
+        .scene {
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px 0 80px 0;
-            width: 100%;
-        }
-
-        /* الحاوية الخارجية لضمان عدم خروج العناصر عن الشاشة */
-        .book-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 600px; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0 50px; /* مساحة جانبية للأزرار */
-        }
-
-        .book-container {
-            position: relative;
-            perspective: 1500px;
-            width: var(--book-width);
-            max-width: var(--max-book-width);
-            /* النسبة الذهبية للكتاب الطولي (3:4) */
-            aspect-ratio: 3 / 4; 
+            padding: 40px 0;
+            perspective: 2000px;
         }
 
         .book {
             position: relative;
-            width: 100%;
-            height: 100%;
+            width: var(--book-width);
+            height: var(--book-height);
             transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+            /* لجعل الكتاب يتوسط الشاشة عند الفتح */
+            transform: translateX(0%); 
+        }
+
+        /* حالة الكتاب عندما يكون مفتوحاً (يتحرك لليمين ليظهر الصفحتان في المنتصف) */
+        .book.open {
+            transform: translateX(calc(var(--book-width) / 2));
         }
 
         .page {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
             transform-origin: left;
             transform-style: preserve-3d;
-            transition: transform 0.7s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0.7s;
-            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0.6s;
+            cursor: grab;
+            user-select: none;
         }
+
+        .page:active { cursor: grabbing; }
 
         .page-face {
             position: absolute;
@@ -110,74 +82,67 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 5px 0 10px rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 5px 0 15px rgba(0,0,0,0.1);
             background: white;
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 10px 10px 0;
             overflow: hidden;
         }
 
         .page-face img {
             width: 100%;
             height: 100%;
-            object-fit: contain; 
+            object-fit: contain;
             pointer-events: none;
         }
 
         .back {
             transform: rotateY(180deg);
-            border-radius: 8px 0 0 8px;
+            border-radius: 10px 0 0 10px;
         }
 
+        /* التقليب */
         .flipped {
             transform: rotateY(-180deg);
         }
 
-        /* الأزرار - تم تحسين وضعيتها لتكون بعيدة عن الكتاب */
+        /* الأزرار */
         .controls {
-            position: absolute;
-            top: 50%;
+            position: fixed;
+            bottom: 30px;
             left: 0;
             right: 0;
-            transform: translateY(-50%);
             display: flex;
-            justify-content: space-between;
-            width: 100%;
+            justify-content: center;
+            gap: 40px;
+            z-index: 2000;
             pointer-events: none;
-            z-index: 1000;
         }
 
         .nav-btn {
-            width: 42px;
-            height: 42px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: var(--primary-color);
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 22px;
             pointer-events: auto;
-            box-shadow: 0 4px 12px rgba(128, 0, 128, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
         }
 
-        .nav-btn:active { transform: scale(0.9); }
-
-        /* تحسينات الموبايل */
-        @media (max-width: 480px) {
-            .book-wrapper {
-                padding: 0 40px;
+        /* الهاتف المحمول - التعديلات الجذرية */
+        @media (max-width: 768px) {
+            :root {
+                --book-width: 42vw; /* جعل عرض الصفحة الواحدة أقل من نصف الشاشة */
+                --book-height: 60vw; /* تناسب الطول مع العرض */
             }
-            .book-container {
-                width: 85vw; /* زيادة عرض الكتاب قليلاً في الشاشات الصغيرة جداً */
+            .book.open {
+                /* تحريك دقيق ليظهر الصفحتان في المنتصف تماماً */
+                transform: translateX(calc(var(--book-width) * 0.5)); 
             }
-            .nav-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
-            }
+            .main-title { font-size: 1.6rem; }
         }
     </style>
 </head>
@@ -185,36 +150,32 @@
 
     <header>
         <img src="logo.png" alt="Logo" class="logo">
-        <h1 class="main-title">ثمار الخير</h1>
+        <h1 class="main-title">ثمار</h1>
     </header>
 
-    <div class="works-section">
-        <div class="work-item">
-            <div class="book-wrapper">
-                <div class="controls">
-                    <button class="nav-btn" onclick="prevPage()">❯</button>
-                    <button class="nav-btn" onclick="nextPage()">❮</button>
-                </div>
-                <div class="book-container">
-                    <div class="book" id="mainBook"></div>
-                </div>
-            </div>
+    <div class="scene">
+        <div class="book" id="myBook">
+            <!-- الصفحات يتم إنشاؤها بواسطة JS -->
         </div>
     </div>
 
+    <div class="controls">
+        <button class="nav-btn" onclick="prevPage()">❯</button>
+        <button class="nav-btn" onclick="nextPage()">❮</button>
+    </div>
+
     <script>
-        // إعدادات العمل الوحيد
         const config = {
             prefix: "", 
-            count: 12, // ينتهي عند 12.jpg
+            count: 12, 
         };
 
-        let currentPageIndex = 0;
+        let currentPage = 0;
+        const book = document.getElementById('myBook');
+        const totalPages = Math.ceil(config.count / 2);
+        let pages = [];
 
         function initBook() {
-            const bookElement = document.getElementById('mainBook');
-            const totalPages = Math.ceil(config.count / 2);
-
             for (let i = 0; i < totalPages; i++) {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
@@ -228,49 +189,92 @@
                     <div class="page-face back"><img src="${backImg}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${i*2+2}'"></div>
                 `;
 
-                pageDiv.addEventListener('click', () => {
-                    if (pageDiv.classList.contains('flipped')) prevPage();
-                    else nextPage();
-                });
+                // إضافة أحداث اللمس للتقليب الواقعي
+                addTouchEvents(pageDiv, i);
 
-                bookElement.appendChild(pageDiv);
+                book.appendChild(pageDiv);
+                pages.push(pageDiv);
+            }
+        }
+
+        function updateBookStatus() {
+            // إذا كان الكتاب مفتوحاً (صفحة واحدة على الأقل مقلوبة)
+            if (currentPage > 0) {
+                book.classList.add('open');
+            } else {
+                book.classList.remove('open');
             }
         }
 
         function nextPage() {
-            const pages = document.getElementsByClassName('page');
-            if (currentPageIndex < pages.length) {
-                const page = pages[currentPageIndex];
-                page.classList.add('flipped');
-                setTimeout(() => { page.style.zIndex = currentPageIndex + 1; }, 300);
-                currentPageIndex++;
+            if (currentPage < totalPages) {
+                pages[currentPage].classList.add('flipped');
+                pages[currentPage].style.zIndex = currentPage + 1;
+                currentPage++;
+                updateBookStatus();
             }
         }
 
         function prevPage() {
-            const pages = document.getElementsByClassName('page');
-            if (currentPageIndex > 0) {
-                currentPageIndex--;
-                const page = pages[currentPageIndex];
-                page.classList.remove('flipped');
-                setTimeout(() => { page.style.zIndex = pages.length - currentPageIndex; }, 300);
+            if (currentPage > 0) {
+                currentPage--;
+                pages[currentPage].classList.remove('flipped');
+                pages[currentPage].style.zIndex = totalPages - currentPage;
+                updateBookStatus();
             }
         }
 
-        // دعم السحب باليد للهاتف
-        let touchStartX = 0;
-        document.getElementById('mainBook').addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
+        // --- منطق التقليب الواقعي باليد (Drag to Flip) ---
+        function addTouchEvents(element, index) {
+            let startX = 0;
+            let currentRotation = 0;
 
-        document.getElementById('mainBook').addEventListener('touchend', e => {
-            const touchEndX = e.changedTouches[0].screenX;
-            const diff = touchStartX - touchEndX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) nextPage();
-                else prevPage();
-            }
-        }, {passive: true});
+            element.addEventListener('touchstart', e => {
+                startX = e.touches[0].clientX;
+                // إذا كانت الصفحة مقلوبة، نمنع حركتها إلا إذا كانت هي الصفحة الحالية للرجوع
+                if (index !== currentPage) return;
+            }, {passive: true});
+
+            element.addEventListener('touchmove', e => {
+                if (index !== currentPage) return;
+                
+                const moveX = e.touches[0].clientX;
+                const diff = startX - moveX;
+                
+                // تحويل المسافة إلى زاوية دوران (من 0 إلى -180 درجة)
+                if (!element.classList.contains('flipped')) {
+                    currentRotation = Math.max(-180, diff * 0.5); 
+                    element.style.transition = 'none';
+                    element.style.transform = `rotateY(${currentRotation}deg)`;
+                } else {
+                    // حالة الرجوع للخلف
+                    currentRotation = Math.min(0, -diff * 0.5);
+                    element.style.transition = 'none';
+                    element.style.transform = `rotateY(${currentRotation}deg)`;
+                }
+            }, {passive: true});
+
+            element.addEventListener('touchend', e => {
+                if (index !== currentPage) return;
+                
+                element.style.transition = 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)';
+                
+                if (!element.classList.contains('flipped')) {
+                    if (currentRotation < -90) {
+                        nextPage();
+                    } else {
+                        element.style.transform = `rotateY(0deg)`;
+                    }
+                } else {
+                    if (currentRotation > -90) {
+                        prevPage();
+                    } else {
+                        element.style.transform = `rotateY(-180deg)`;
+                    }
+                }
+                currentRotation = 0;
+            });
+        }
 
         window.onload = initBook;
     </script>
