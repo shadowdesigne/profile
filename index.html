@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ثمار - بروفايل</title>
+    <title>بروفايل - معرض أعمال</title>
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #800080; 
             --bg-gradient: radial-gradient(circle, #ffffff 0%, #e0e0e8 100%);
-            /* مقاسات ديناميكية تعتمد على حجم الشاشة */
             --book-width: 40vw; 
             --book-height: 60vw; 
         }
@@ -28,7 +27,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* منع أي تمرير في الشاشة لضمان الـ Full Screen */
+            overflow: hidden; 
             width: 100vw;
             height: 100vh;
         }
@@ -44,18 +43,9 @@
         .logo { 
             max-width: 110px; 
             height: auto; 
-            margin-bottom: 5px; 
             filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
         }
 
-        .main-title {
-            color: var(--primary-color);
-            font-weight: 800;
-            font-size: clamp(1.4rem, 4vw, 2rem);
-            margin: 0;
-        }
-
-        /* المشهد الأساسي - يشغل كامل الشاشة */
         .scene {
             width: 100vw;
             height: 100vh;
@@ -72,17 +62,15 @@
             transform-style: preserve-3d;
             transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
             transform: translateX(0%); 
-            /* تحديد أقصى حجم للكتاب على الشاشات الكبيرة جداً */
             max-width: 450px;
             max-height: 600px;
         }
 
-        /* تحريك الكتاب لليمين عند الفتح ليتوسط الشاشة */
         .book.open {
             transform: translateX(calc(var(--book-width) / 2));
         }
 
-        /* الغلاف الخلفي الثابت */
+        /* الغلاف الخلفي الثابت - يجعله صفحة فردية في النهاية */
         .back-cover {
             position: absolute;
             width: 100%;
@@ -141,11 +129,15 @@
             border-radius: 10px 0 0 10px;
         }
 
+        .transparent-back {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
         .flipped {
             transform: rotateY(-180deg);
         }
 
-        /* أزرار التحكم - ثابتة في الأسفل بشكل أنيق */
         .controls {
             position: fixed;
             bottom: 40px;
@@ -178,10 +170,9 @@
         .nav-btn:hover { transform: scale(1.1); background: #600060; }
         .nav-btn:active { transform: scale(0.9); }
 
-        /* تعديلات الهاتف المحمول لزيادة الحجم والوضوح */
         @media (max-width: 768px) {
             :root {
-                --book-width: 46vw; /* زيادة حجم الكتاب على الموبايل */
+                --book-width: 46vw; 
                 --book-height: 65vw; 
             }
             .book.open {
@@ -191,7 +182,6 @@
             .logo { max-width: 90px; }
         }
 
-        /* تعديلات لشاشات العرض الكبيرة جداً */
         @media (min-width: 1600px) {
             :root {
                 --book-width: 25vw;
@@ -204,16 +194,15 @@
 
     <header>
         <img src="logo.png" alt="Logo" class="logo">
-        <h1 class="main-title">ثمار</h1>
+        <!-- تم إزالة كلمة ثمار من هنا -->
     </header>
 
     <div class="scene">
         <div class="book" id="myBook">
-            <!-- الغلاف الخلفي الثابت (صورة 12) -->
+            <!-- الغلاف الخلفي الثابت (صورة 12) - يجعل النهاية فردية مثل البداية -->
             <div class="back-cover">
                 <img src="12.jpg" alt="Back Cover" onerror="this.src='https://via.placeholder.com/400x600?text=Page+12'">
             </div>
-            <!-- الصفحات المتقلبة ستوضع هنا -->
         </div>
     </div>
 
@@ -245,10 +234,12 @@
                 let frontSrc = `${frontImgNum}${config.prefix}.jpg`;
                 let backSrc = (backImgNum < config.totalImages) ? `${backImgNum}${config.prefix}.jpg` : '';
 
+                const backClass = backSrc ? 'page-face back' : 'page-face back transparent-back';
+
                 pageDiv.innerHTML = `
                     <div class="page-face front"><img src="${frontSrc}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${frontImgNum}'"></div>
-                    <div class="page-face back">
-                        ${backSrc ? `<img src="${backSrc}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${backImgNum}'">` : `<div style="width:100%;height:100%;background:white;"></div>`}
+                    <div class="${backClass}">
+                        ${backSrc ? `<img src="${backSrc}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${backImgNum}'">` : ''}
                     </div>
                 `;
 
