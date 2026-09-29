@@ -8,40 +8,61 @@
     <style>
         :root {
             --primary-color: #800080; 
-            --bg-color: #f4f4f9;
-            --book-width: 350px; 
-            --book-height: 480px;
+            --bg-gradient: radial-gradient(circle, #ffffff 0%, #e0e0e8 100%);
+            /* مقاسات ديناميكية تعتمد على حجم الشاشة */
+            --book-width: 40vw; 
+            --book-height: 60vw; 
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            margin: 0; 
+            padding: 0; 
+        }
 
         body {
             font-family: 'Almarai', sans-serif;
-            background-color: var(--bg-color);
+            background: var(--bg-gradient);
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
-            width: 100%;
-            min-height: 100vh;
+            justify-content: center;
+            overflow: hidden; /* منع أي تمرير في الشاشة لضمان الـ Full Screen */
+            width: 100vw;
+            height: 100vh;
         }
 
-        header { text-align: center; padding: 20px 15px; width: 100%; }
-        .logo { max-width: 120px; height: auto; margin-bottom: 10px; }
+        header { 
+            position: absolute;
+            top: 20px;
+            text-align: center; 
+            width: 100%; 
+            z-index: 10;
+        }
+
+        .logo { 
+            max-width: 110px; 
+            height: auto; 
+            margin-bottom: 5px; 
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
         .main-title {
             color: var(--primary-color);
             font-weight: 800;
-            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            margin: 0;
         }
 
-        /* حاوية العمل */
+        /* المشهد الأساسي - يشغل كامل الشاشة */
         .scene {
-            width: 100%;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 40px 0;
-            perspective: 2000px;
+            perspective: 2500px;
         }
 
         .book {
@@ -49,14 +70,36 @@
             width: var(--book-width);
             height: var(--book-height);
             transform-style: preserve-3d;
-            transition: transform 0.5s ease;
-            /* لجعل الكتاب يتوسط الشاشة عند الفتح */
+            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
             transform: translateX(0%); 
+            /* تحديد أقصى حجم للكتاب على الشاشات الكبيرة جداً */
+            max-width: 450px;
+            max-height: 600px;
         }
 
-        /* حالة الكتاب عندما يكون مفتوحاً (يتحرك لليمين ليظهر الصفحتان في المنتصف) */
+        /* تحريك الكتاب لليمين عند الفتح ليتوسط الشاشة */
         .book.open {
             transform: translateX(calc(var(--book-width) / 2));
+        }
+
+        /* الغلاف الخلفي الثابت */
+        .back-cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            background: white;
+            border-radius: 0 10px 10px 0;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.1), 10px 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .back-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .page {
@@ -71,8 +114,6 @@
             cursor: grab;
             user-select: none;
         }
-
-        .page:active { cursor: grabbing; }
 
         .page-face {
             position: absolute;
@@ -100,49 +141,62 @@
             border-radius: 10px 0 0 10px;
         }
 
-        /* التقليب */
         .flipped {
             transform: rotateY(-180deg);
         }
 
-        /* الأزرار */
+        /* أزرار التحكم - ثابتة في الأسفل بشكل أنيق */
         .controls {
             position: fixed;
-            bottom: 30px;
+            bottom: 40px;
             left: 0;
             right: 0;
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 60px;
             z-index: 2000;
             pointer-events: none;
         }
 
         .nav-btn {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             background: var(--primary-color);
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 22px;
+            font-size: 24px;
             pointer-events: auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 20px rgba(128, 0, 128, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             transition: 0.3s;
         }
 
-        /* الهاتف المحمول - التعديلات الجذرية */
+        .nav-btn:hover { transform: scale(1.1); background: #600060; }
+        .nav-btn:active { transform: scale(0.9); }
+
+        /* تعديلات الهاتف المحمول لزيادة الحجم والوضوح */
         @media (max-width: 768px) {
             :root {
-                --book-width: 42vw; /* جعل عرض الصفحة الواحدة أقل من نصف الشاشة */
-                --book-height: 60vw; /* تناسب الطول مع العرض */
+                --book-width: 46vw; /* زيادة حجم الكتاب على الموبايل */
+                --book-height: 65vw; 
             }
             .book.open {
-                /* تحريك دقيق ليظهر الصفحتان في المنتصف تماماً */
                 transform: translateX(calc(var(--book-width) * 0.5)); 
             }
-            .main-title { font-size: 1.6rem; }
+            header { top: 10px; }
+            .logo { max-width: 90px; }
+        }
+
+        /* تعديلات لشاشات العرض الكبيرة جداً */
+        @media (min-width: 1600px) {
+            :root {
+                --book-width: 25vw;
+                --book-height: 35vw;
+            }
         }
     </style>
 </head>
@@ -155,7 +209,11 @@
 
     <div class="scene">
         <div class="book" id="myBook">
-            <!-- الصفحات يتم إنشاؤها بواسطة JS -->
+            <!-- الغلاف الخلفي الثابت (صورة 12) -->
+            <div class="back-cover">
+                <img src="12.jpg" alt="Back Cover" onerror="this.src='https://via.placeholder.com/400x600?text=Page+12'">
+            </div>
+            <!-- الصفحات المتقلبة ستوضع هنا -->
         </div>
     </div>
 
@@ -167,49 +225,62 @@
     <script>
         const config = {
             prefix: "", 
-            count: 12, 
+            totalImages: 12, 
         };
 
         let currentPage = 0;
         const book = document.getElementById('myBook');
-        const totalPages = Math.ceil(config.count / 2);
+        const flippableImagesCount = config.totalImages - 1; 
+        const totalSheets = Math.ceil(flippableImagesCount / 2);
         let pages = [];
 
         function initBook() {
-            for (let i = 0; i < totalPages; i++) {
+            for (let i = 0; i < totalSheets; i++) {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
-                pageDiv.style.zIndex = totalPages - i;
+                
+                const frontImgNum = (i * 2) + 1;
+                const backImgNum = (i * 2) + 2;
 
-                const frontImg = `${i * 2 + 1}${config.prefix}.jpg`;
-                const backImg = `${i * 2 + 2}${config.prefix}.jpg`;
+                let frontSrc = `${frontImgNum}${config.prefix}.jpg`;
+                let backSrc = (backImgNum < config.totalImages) ? `${backImgNum}${config.prefix}.jpg` : '';
 
                 pageDiv.innerHTML = `
-                    <div class="page-face front"><img src="${frontImg}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${i*2+1}'"></div>
-                    <div class="page-face back"><img src="${backImg}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${i*2+2}'"></div>
+                    <div class="page-face front"><img src="${frontSrc}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${frontImgNum}'"></div>
+                    <div class="page-face back">
+                        ${backSrc ? `<img src="${backSrc}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${backImgNum}'">` : `<div style="width:100%;height:100%;background:white;"></div>`}
+                    </div>
                 `;
 
-                // إضافة أحداث اللمس للتقليب الواقعي
                 addTouchEvents(pageDiv, i);
-
                 book.appendChild(pageDiv);
                 pages.push(pageDiv);
             }
+            refreshZIndexes();
+        }
+
+        function refreshZIndexes() {
+            pages.forEach((page, index) => {
+                if (index < currentPage) {
+                    page.style.zIndex = index + 1;
+                } else {
+                    page.style.zIndex = totalSheets - index;
+                }
+            });
         }
 
         function updateBookStatus() {
-            // إذا كان الكتاب مفتوحاً (صفحة واحدة على الأقل مقلوبة)
             if (currentPage > 0) {
                 book.classList.add('open');
             } else {
                 book.classList.remove('open');
             }
+            refreshZIndexes();
         }
 
         function nextPage() {
-            if (currentPage < totalPages) {
+            if (currentPage < totalSheets) {
                 pages[currentPage].classList.add('flipped');
-                pages[currentPage].style.zIndex = currentPage + 1;
                 currentPage++;
                 updateBookStatus();
             }
@@ -219,36 +290,30 @@
             if (currentPage > 0) {
                 currentPage--;
                 pages[currentPage].classList.remove('flipped');
-                pages[currentPage].style.zIndex = totalPages - currentPage;
                 updateBookStatus();
             }
         }
 
-        // --- منطق التقليب الواقعي باليد (Drag to Flip) ---
         function addTouchEvents(element, index) {
             let startX = 0;
             let currentRotation = 0;
 
             element.addEventListener('touchstart', e => {
                 startX = e.touches[0].clientX;
-                // إذا كانت الصفحة مقلوبة، نمنع حركتها إلا إذا كانت هي الصفحة الحالية للرجوع
                 if (index !== currentPage) return;
             }, {passive: true});
 
             element.addEventListener('touchmove', e => {
                 if (index !== currentPage) return;
-                
                 const moveX = e.touches[0].clientX;
                 const diff = startX - moveX;
                 
-                // تحويل المسافة إلى زاوية دوران (من 0 إلى -180 درجة)
                 if (!element.classList.contains('flipped')) {
-                    currentRotation = Math.max(-180, diff * 0.5); 
+                    currentRotation = Math.max(-180, diff * 0.7); 
                     element.style.transition = 'none';
                     element.style.transform = `rotateY(${currentRotation}deg)`;
                 } else {
-                    // حالة الرجوع للخلف
-                    currentRotation = Math.min(0, -diff * 0.5);
+                    currentRotation = Math.min(0, -diff * 0.7);
                     element.style.transition = 'none';
                     element.style.transform = `rotateY(${currentRotation}deg)`;
                 }
@@ -256,21 +321,13 @@
 
             element.addEventListener('touchend', e => {
                 if (index !== currentPage) return;
-                
                 element.style.transition = 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)';
-                
                 if (!element.classList.contains('flipped')) {
-                    if (currentRotation < -90) {
-                        nextPage();
-                    } else {
-                        element.style.transform = `rotateY(0deg)`;
-                    }
+                    if (currentRotation < -90) nextPage();
+                    else element.style.transform = `rotateY(0deg)`;
                 } else {
-                    if (currentRotation > -90) {
-                        prevPage();
-                    } else {
-                        element.style.transform = `rotateY(-180deg)`;
-                    }
+                    if (currentRotation > -90) prevPage();
+                    else element.style.transform = `rotateY(-180deg)`;
                 }
                 currentRotation = 0;
             });
