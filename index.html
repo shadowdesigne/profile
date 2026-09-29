@@ -7,17 +7,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #800080; 
-            --bg-gradient: radial-gradient(circle, #ffffff 0%, #e0e0e8 100%);
-            --book-width: 40vw; 
-            --book-height: 60vw; 
+            --primary-color: #800080;
+            --primary-light: #a626a6;
+            --bg-gradient: radial-gradient(circle at center, #ffffff 0%, #dcdce6 100%);
+            /* حجم أكبر وأوضح للكتاب مع الحفاظ على التناسق */
+            --book-width: min(42vw, 520px);
+            --book-height: min(62vw, 720px);
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            margin: 0; 
-            padding: 0; 
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
         }
 
         body {
@@ -26,68 +28,62 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            overflow: hidden; 
+            justify-content: space-between;
+            overflow: hidden;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
+            padding: 12px 0 18px;
         }
 
-        header { 
-            position: absolute;
-            top: 20px;
-            text-align: center; 
-            width: 100%; 
+        /* الهيدر والشعار */
+        header {
+            width: 100%;
+            text-align: center;
             z-index: 10;
+            flex-shrink: 0;
         }
 
-        .logo { 
-            max-width: 110px; 
-            height: auto; 
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        .logo {
+            max-width: 115px;
+            max-height: 60px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
         }
 
+        /* مسرح العرض */
         .scene {
-            width: 100vw;
-            height: 100vh;
+            flex: 1;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            perspective: 2500px;
+            perspective: 2800px;
+            position: relative;
+            overflow: visible;
+            touch-action: none;
         }
 
         .book {
             position: relative;
             width: var(--book-width);
             height: var(--book-height);
+            max-height: 74dvh;
             transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
-            transform: translateX(0%); 
-            max-width: 450px;
-            max-height: 600px;
+            transition: transform 0.65s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transform: translateX(0%);
         }
 
+        /* تمركز الكتاب عند الفتح (صفحتين) */
         .book.open {
-            transform: translateX(calc(var(--book-width) / 2));
+            transform: translateX(50%);
         }
 
-        /* الغلاف الخلفي الثابت - يجعله صفحة فردية في النهاية */
-        .back-cover {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            background: white;
-            border-radius: 0 10px 10px 0;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.1), 10px 0 20px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .back-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        /* تمركز الصفحة الأخيرة وحدها في المنتصف تماماً مثل الأولى */
+        .book.closed-end {
+            transform: translateX(100%);
         }
 
         .page {
@@ -96,11 +92,15 @@
             height: 100%;
             top: 0;
             left: 0;
-            transform-origin: left;
+            transform-origin: left center;
             transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0.6s;
+            transition: transform 0.65s cubic-bezier(0.645, 0.045, 0.355, 1);
             cursor: grab;
             user-select: none;
+        }
+
+        .page:active {
+            cursor: grabbing;
         }
 
         .page-face {
@@ -108,13 +108,37 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 5px 0 15px rgba(0,0,0,0.1);
-            background: white;
-            border-radius: 0 10px 10px 0;
+            background: #ffffff;
+            border-radius: 0 12px 12px 0;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.08), 6px 6px 22px rgba(0,0,0,0.15);
             overflow: hidden;
+        }
+
+        /* خط الظل الداخلي عند كعب الكتاب */
+        .page-face.front::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 25px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.12), transparent);
+            pointer-events: none;
+        }
+
+        .page-face.back::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 25px;
+            height: 100%;
+            background: linear-gradient(to left, rgba(0,0,0,0.12), transparent);
+            pointer-events: none;
         }
 
         .page-face img {
@@ -122,70 +146,171 @@
             height: 100%;
             object-fit: contain;
             pointer-events: none;
+            user-select: none;
         }
 
         .back {
             transform: rotateY(180deg);
-            border-radius: 10px 0 0 10px;
-        }
-
-        .transparent-back {
-            background: transparent !important;
-            box-shadow: none !important;
+            border-radius: 12px 0 0 12px;
         }
 
         .flipped {
             transform: rotateY(-180deg);
         }
 
-        .controls {
-            position: fixed;
-            bottom: 40px;
-            left: 0;
-            right: 0;
+        /* علامة زاوية صغيرة جداً ونابضة تدل على إمكانية السحب اليدوي */
+        .corner-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(128, 0, 128, 0.14);
+            border: 1.5px solid rgba(128, 0, 128, 0.4);
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 60px;
-            z-index: 2000;
             pointer-events: none;
+            animation: cornerPulse 2s infinite ease-in-out;
+            z-index: 5;
+        }
+
+        .corner-hint::before {
+            content: '‹';
+            color: var(--primary-color);
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1;
+            transform: translateX(-1px);
+        }
+
+        .back .corner-hint {
+            right: auto;
+            left: 10px;
+        }
+
+        .back .corner-hint::before {
+            content: '›';
+            transform: translateX(1px);
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% { transform: scale(1); opacity: 0.75; }
+            50% { transform: scale(1.18); opacity: 1; }
+        }
+
+        /* شريط التحكم السفلي الواضح */
+        .bottom-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 2000;
+            flex-shrink: 0;
+        }
+
+        /* مؤشر التفاعل اليدوي الصغير */
+        .swipe-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.85);
+            color: #444;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid rgba(128, 0, 128, 0.2);
+        }
+
+        .swipe-icon {
+            display: inline-block;
+            font-size: 13px;
+            animation: swipeHand 1.8s infinite ease-in-out;
+        }
+
+        @keyframes swipeHand {
+            0%, 100% { transform: translateX(3px) rotate(0deg); }
+            50% { transform: translateX(-4px) rotate(-10deg); }
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
         }
 
         .nav-btn {
-            width: 55px;
-            height: 55px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             background: var(--primary-color);
             color: white;
-            border: none;
+            border: 2px solid #ffffff;
             cursor: pointer;
-            font-size: 24px;
-            pointer-events: auto;
-            box-shadow: 0 8px 20px rgba(128, 0, 128, 0.4);
+            font-size: 22px;
+            box-shadow: 0 6px 18px rgba(128, 0, 128, 0.35);
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: 0.3s;
+            transition: all 0.25s ease;
         }
 
-        .nav-btn:hover { transform: scale(1.1); background: #600060; }
-        .nav-btn:active { transform: scale(0.9); }
+        .nav-btn:hover:not(:disabled) {
+            transform: scale(1.08);
+            background: var(--primary-light);
+        }
 
-        @media (max-width: 768px) {
+        .nav-btn:active:not(:disabled) {
+            transform: scale(0.94);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .page-counter {
+            min-width: 90px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary-color);
+            background: #ffffff;
+            padding: 8px 16px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* ضبط المقاسات للشاشات المتوسطة والجوال */
+        @media (max-width: 900px) {
             :root {
-                --book-width: 46vw; 
-                --book-height: 65vw; 
+                --book-width: 46vw;
+                --book-height: 66vw;
             }
-            .book.open {
-                transform: translateX(calc(var(--book-width) * 0.5)); 
+            .logo { max-width: 95px; max-height: 50px; }
+            .nav-btn { width: 48px; height: 48px; font-size: 20px; }
+        }
+
+        @media (max-width: 550px) {
+            :root {
+                --book-width: 47vw;
+                --book-height: 68vw;
             }
-            header { top: 10px; }
-            .logo { max-width: 90px; }
+            body { padding: 8px 0 14px; }
+            .controls { gap: 20px; }
+            .page-counter { font-size: 13px; padding: 6px 12px; min-width: 76px; }
+            .swipe-badge { font-size: 11px; padding: 3px 10px; }
         }
 
         @media (min-width: 1600px) {
             :root {
-                --book-width: 25vw;
-                --book-height: 35vw;
+                --book-width: min(32vw, 580px);
+                --book-height: min(45vw, 780px);
             }
         }
     </style>
@@ -193,66 +318,81 @@
 <body>
 
     <header>
-        <img src="logo.png" alt="Logo" class="logo">
-        <!-- تم إزالة كلمة ثمار من هنا -->
+        <img src="logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
     </header>
 
-    <div class="scene">
-        <div class="book" id="myBook">
-            <!-- الغلاف الخلفي الثابت (صورة 12) - يجعل النهاية فردية مثل البداية -->
-            <div class="back-cover">
-                <img src="12.jpg" alt="Back Cover" onerror="this.src='https://via.placeholder.com/400x600?text=Page+12'">
-            </div>
-        </div>
+    <div class="scene" id="bookScene">
+        <div class="book" id="myBook"></div>
     </div>
 
-    <div class="controls">
-        <button class="nav-btn" onclick="prevPage()">❯</button>
-        <button class="nav-btn" onclick="nextPage()">❮</button>
+    <div class="bottom-bar">
+        <!-- إشارة صغيرة وبسيطة توضح أن السحب باليد مفعل -->
+        <div class="swipe-badge">
+            <span class="swipe-icon">👆</span>
+            <span>اسحب الصفحة باليد أو استخدم الأزرار</span>
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevPage()" title="الصفحة السابقة">❯</button>
+            <div class="page-counter" id="pageCounter">1 / 12</div>
+            <button class="nav-btn" id="nextBtn" onclick="nextPage()" title="الصفحة التالية">❮</button>
+        </div>
     </div>
 
     <script>
         const config = {
-            prefix: "", 
-            totalImages: 12, 
+            prefix: "",
+            totalImages: 12,
         };
 
         let currentPage = 0;
         const book = document.getElementById('myBook');
-        const flippableImagesCount = config.totalImages - 1; 
-        const totalSheets = Math.ceil(flippableImagesCount / 2);
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageCounter = document.getElementById('pageCounter');
+
+        // كل ورقة تحمل صورتين (أمامية وخلفية)؛ 12 صورة = 6 ورقات، وآخر وجه هو صفحة 12 الفردية
+        const totalSheets = Math.ceil(config.totalImages / 2);
         let pages = [];
 
         function initBook() {
             for (let i = 0; i < totalSheets; i++) {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
-                
+
                 const frontImgNum = (i * 2) + 1;
                 const backImgNum = (i * 2) + 2;
 
-                let frontSrc = `${frontImgNum}${config.prefix}.jpg`;
-                let backSrc = (backImgNum < config.totalImages) ? `${backImgNum}${config.prefix}.jpg` : '';
-
-                const backClass = backSrc ? 'page-face back' : 'page-face back transparent-back';
+                const frontSrc = `${frontImgNum}${config.prefix}.jpg`;
+                const hasBack = backImgNum <= config.totalImages;
+                const backSrc = hasBack ? `${backImgNum}${config.prefix}.jpg` : '';
 
                 pageDiv.innerHTML = `
-                    <div class="page-face front"><img src="${frontSrc}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${frontImgNum}'"></div>
-                    <div class="${backClass}">
-                        ${backSrc ? `<img src="${backSrc}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${backImgNum}'">` : ''}
+                    <div class="page-face front">
+                        <img src="${frontSrc}" alt="صفحة ${frontImgNum}" onerror="this.src='https://via.placeholder.com/500x700/ffffff/800080?text=Page+${frontImgNum}'">
+                        <div class="corner-hint"></div>
+                    </div>
+                    <div class="page-face back">
+                        ${hasBack ? `
+                            <img src="${backSrc}" alt="صفحة ${backImgNum}" onerror="this.src='https://via.placeholder.com/500x700/ffffff/800080?text=Page+${backImgNum}'">
+                            <div class="corner-hint"></div>
+                        ` : ''}
                     </div>
                 `;
 
-                addTouchEvents(pageDiv, i);
                 book.appendChild(pageDiv);
                 pages.push(pageDiv);
             }
-            refreshZIndexes();
+
+            setupInteractiveDrag();
+            updateBookStatus();
         }
 
-        function refreshZIndexes() {
+        function refreshZIndexes(activeDragIndex = -1) {
             pages.forEach((page, index) => {
-                if (index < currentPage) {
+                if (index === activeDragIndex) {
+                    page.style.zIndex = totalSheets + 10;
+                } else if (index < currentPage) {
                     page.style.zIndex = index + 1;
                 } else {
                     page.style.zIndex = totalSheets - index;
@@ -261,17 +401,41 @@
         }
 
         function updateBookStatus() {
-            if (currentPage > 0) {
-                book.classList.add('open');
+            book.classList.remove('open', 'closed-end');
+
+            if (currentPage === 0) {
+                // الصفحة الأولى فردية في المنتصف
+            } else if (currentPage === totalSheets) {
+                // الصفحة الأخيرة فردية في المنتصف تماماً مثل الأولى
+                book.classList.add('closed-end');
             } else {
-                book.classList.remove('open');
+                // الصفحات الداخلية مفتوحة كصفحتين متقابلتين
+                book.classList.add('open');
             }
+
+            // تحديث حالة الأزرار والعداد
+            prevBtn.disabled = (currentPage === 0);
+            nextBtn.disabled = (currentPage === totalSheets);
+
+            if (currentPage === 0) {
+                pageCounter.textContent = `1 / ${config.totalImages}`;
+            } else if (currentPage === totalSheets) {
+                pageCounter.textContent = `${config.totalImages} / ${config.totalImages}`;
+            } else {
+                const leftPage = currentPage * 2;
+                const rightPage = leftPage + 1;
+                pageCounter.textContent = `${leftPage}-${rightPage} / ${config.totalImages}`;
+            }
+
             refreshZIndexes();
         }
 
         function nextPage() {
             if (currentPage < totalSheets) {
-                pages[currentPage].classList.add('flipped');
+                const page = pages[currentPage];
+                page.style.transition = '';
+                page.style.transform = '';
+                page.classList.add('flipped');
                 currentPage++;
                 updateBookStatus();
             }
@@ -280,48 +444,117 @@
         function prevPage() {
             if (currentPage > 0) {
                 currentPage--;
-                pages[currentPage].classList.remove('flipped');
+                const page = pages[currentPage];
+                page.style.transition = '';
+                page.style.transform = '';
+                page.classList.remove('flipped');
                 updateBookStatus();
             }
         }
 
-        function addTouchEvents(element, index) {
+        // نظام سحب يدوي سلس يدعم اللمس (الجوال) والماوس (الكمبيوتر) في الاتجاهين
+        function setupInteractiveDrag() {
+            const scene = document.getElementById('bookScene');
+            let isDragging = false;
             let startX = 0;
-            let currentRotation = 0;
+            let activePage = null;
+            let dragMode = null; // 'next' أو 'prev'
+            let currentAngle = 0;
 
-            element.addEventListener('touchstart', e => {
-                startX = e.touches[0].clientX;
-                if (index !== currentPage) return;
-            }, {passive: true});
+            function getClientX(e) {
+                return e.touches ? e.touches[0].clientX : e.clientX;
+            }
 
-            element.addEventListener('touchmove', e => {
-                if (index !== currentPage) return;
-                const moveX = e.touches[0].clientX;
-                const diff = startX - moveX;
-                
-                if (!element.classList.contains('flipped')) {
-                    currentRotation = Math.max(-180, diff * 0.7); 
-                    element.style.transition = 'none';
-                    element.style.transform = `rotateY(${currentRotation}deg)`;
+            function onStart(e) {
+                if (e.target.closest('.nav-btn')) return;
+
+                const clientX = getClientX(e);
+                const bookRect = book.getBoundingClientRect();
+                const spineX = bookRect.left; // محور دوران الصفحات
+
+                // تحديد اتجاه السحب بناءً على مكان لمس المستخدم أو حالة الكتاب
+                if (currentPage === 0) {
+                    dragMode = 'next';
+                    activePage = pages[currentPage];
+                } else if (currentPage === totalSheets) {
+                    dragMode = 'prev';
+                    activePage = pages[currentPage - 1];
                 } else {
-                    currentRotation = Math.min(0, -diff * 0.7);
-                    element.style.transition = 'none';
-                    element.style.transform = `rotateY(${currentRotation}deg)`;
+                    if (clientX >= spineX) {
+                        dragMode = 'next';
+                        activePage = pages[currentPage];
+                    } else {
+                        dragMode = 'prev';
+                        activePage = pages[currentPage - 1];
+                    }
                 }
-            }, {passive: true});
 
-            element.addEventListener('touchend', e => {
-                if (index !== currentPage) return;
-                element.style.transition = 'transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1)';
-                if (!element.classList.contains('flipped')) {
-                    if (currentRotation < -90) nextPage();
-                    else element.style.transform = `rotateY(0deg)`;
+                if (!activePage) return;
+
+                isDragging = true;
+                startX = clientX;
+                currentAngle = (dragMode === 'next') ? 0 : -180;
+
+                const activeIndex = (dragMode === 'next') ? currentPage : currentPage - 1;
+                refreshZIndexes(activeIndex);
+                activePage.style.transition = 'none';
+            }
+
+            function onMove(e) {
+                if (!isDragging || !activePage) return;
+
+                const clientX = getClientX(e);
+                const diffX = clientX - startX;
+                const pageWidth = book.offsetWidth || 300;
+
+                if (dragMode === 'next') {
+                    // السحب لليسار يقلب الصفحة للأمام (من 0 إلى -180 درجة)
+                    const progress = Math.min(0, Math.max(-1, diffX / pageWidth));
+                    currentAngle = progress * 180;
                 } else {
-                    if (currentRotation > -90) prevPage();
-                    else element.style.transform = `rotateY(-180deg)`;
+                    // السحب لليمين يعيد الصفحة للخلف (من -180 إلى 0 درجة)
+                    const progress = Math.max(0, Math.min(1, diffX / pageWidth));
+                    currentAngle = -180 + (progress * 180);
                 }
-                currentRotation = 0;
-            });
+
+                activePage.style.transform = `rotateY(${currentAngle}deg)`;
+            }
+
+            function onEnd() {
+                if (!isDragging || !activePage) return;
+                isDragging = false;
+
+                // تنظيف الـ inline style حتى يعمل كلاس CSS بسلاسة
+                activePage.style.transition = '';
+                activePage.style.transform = '';
+
+                if (dragMode === 'next') {
+                    if (currentAngle < -45) {
+                        nextPage();
+                    } else {
+                        updateBookStatus();
+                    }
+                } else if (dragMode === 'prev') {
+                    if (currentAngle > -135) {
+                        prevPage();
+                    } else {
+                        updateBookStatus();
+                    }
+                }
+
+                activePage = null;
+                dragMode = null;
+            }
+
+            // أحداث اللمس للجوال والتابلت
+            scene.addEventListener('touchstart', onStart, { passive: true });
+            window.addEventListener('touchmove', onMove, { passive: true });
+            window.addEventListener('touchend', onEnd);
+
+            // أحداث الماوس للكمبيوتر
+            scene.addEventListener('mousedown', onStart);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
         }
 
         window.onload = initBook;
