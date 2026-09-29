@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>معرض بروفايل</title>
+    <title>ثمار الخير - بروفايل</title>
     
-    <!-- استيراد خط المراعي من جوجل -->
+    <!-- استيراد خط المراعي -->
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary-color: #800080; 
-            --bg-color: #f8f9fa;
-            /* مقاسات مرنة تعتمد على عرض الشاشة */
-            --mobile-book-width: 70vw; 
-            --desktop-book-width: 350px;
+            --bg-color: #fdfdfd;
+            /* تحديد عرض الكتاب ليكون مرناً */
+            --book-width: 80vw; 
+            --max-book-width: 380px;
         }
 
         * { 
@@ -30,8 +30,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; /* منع التمرير العرضي نهائياً */
+            overflow-x: hidden; 
             width: 100%;
+            min-height: 100vh;
         }
 
         header {
@@ -41,7 +42,7 @@
         }
 
         .logo {
-            max-width: 130px;
+            max-width: 140px;
             height: auto;
             margin-bottom: 15px;
         }
@@ -50,50 +51,42 @@
             color: var(--primary-color);
             font-family: 'Almarai', sans-serif;
             font-weight: 800;
-            font-size: clamp(1.5rem, 5vw, 2.2rem); /* حجم خط يتغير حسب الشاشة */
+            font-size: clamp(1.6rem, 6vw, 2.4rem);
             margin: 0;
         }
 
         .works-section {
             display: flex;
-            flex-direction: column;
-            gap: 100px;
-            padding: 40px 0 100px 0;
+            justify-content: center;
             align-items: center;
+            padding: 20px 0 80px 0;
             width: 100%;
         }
 
-        .work-item {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        /* حاوية الكتاب: تم تعديلها لتكون مرنة تماماً */
+        /* الحاوية الخارجية لضمان عدم خروج العناصر عن الشاشة */
         .book-wrapper {
             position: relative;
             width: 100%;
-            max-width: 600px; /* أقصى عرض مسموح به */
+            max-width: 600px; 
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0 60px; /* مساحة للأزرار */
+            padding: 0 50px; /* مساحة جانبية للأزرار */
         }
 
         .book-container {
             position: relative;
-            perspective: 2000px;
-            /* العرض يتغير بين الموبايل والكمبيوتر */
-            width: var(--mobile-book-width);
-            max-width: var(--desktop-book-width);
-            transition: all 0.3s ease;
+            perspective: 1500px;
+            width: var(--book-width);
+            max-width: var(--max-book-width);
+            /* النسبة الذهبية للكتاب الطولي (3:4) */
+            aspect-ratio: 3 / 4; 
         }
 
         .book {
             position: relative;
             width: 100%;
+            height: 100%;
             transform-style: preserve-3d;
         }
 
@@ -102,6 +95,7 @@
             top: 0;
             left: 0;
             width: 100%;
+            height: 100%;
             transform-origin: left;
             transform-style: preserve-3d;
             transition: transform 0.7s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0.7s;
@@ -116,7 +110,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 5px 0 10px rgba(0,0,0,0.15);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 5px 0 10px rgba(0,0,0,0.1);
             background: white;
             border-radius: 0 8px 8px 0;
             overflow: hidden;
@@ -125,7 +119,7 @@
         .page-face img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* ضمان عدم قص الصور */
+            object-fit: contain; 
             pointer-events: none;
         }
 
@@ -138,7 +132,7 @@
             transform: rotateY(-180deg);
         }
 
-        /* تحسين الأزرار لتعمل على الموبايل دون أن تختفي */
+        /* الأزرار - تم تحسين وضعيتها لتكون بعيدة عن الكتاب */
         .controls {
             position: absolute;
             top: 50%;
@@ -150,20 +144,19 @@
             width: 100%;
             pointer-events: none;
             z-index: 1000;
-            padding: 0 10px;
         }
 
         .nav-btn {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: var(--primary-color);
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
             pointer-events: auto;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(128, 0, 128, 0.3);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -172,17 +165,17 @@
 
         .nav-btn:active { transform: scale(0.9); }
 
-        /* إعدادات خاصة جداً للهواتف المحمولة */
-        @media (max-width: 768px) {
+        /* تحسينات الموبايل */
+        @media (max-width: 480px) {
             .book-wrapper {
-                padding: 0 50px; /* تقليل المسافة الجانبية */
+                padding: 0 40px;
             }
             .book-container {
-                width: 75vw; /* جعل الكتاب يأخذ مساحة أكبر من الشاشة */
+                width: 85vw; /* زيادة عرض الكتاب قليلاً في الشاشات الصغيرة جداً */
             }
             .nav-btn {
-                width: 35px;
-                height: 35px;
+                width: 36px;
+                height: 36px;
                 font-size: 16px;
             }
         }
@@ -192,145 +185,94 @@
 
     <header>
         <img src="logo.png" alt="Logo" class="logo">
-        <h1 class="main-title">أعمالنا</h1>
+        <h1 class="main-title">ثمار الخير</h1>
     </header>
 
     <div class="works-section">
-        <!-- العمل الأول (طولي) -->
         <div class="work-item">
             <div class="book-wrapper">
                 <div class="controls">
-                    <button class="nav-btn" onclick="prevPage('book1')">❯</button>
-                    <button class="nav-btn" onclick="nextPage('book1')">❮</button>
+                    <button class="nav-btn" onclick="prevPage()">❯</button>
+                    <button class="nav-btn" onclick="nextPage()">❮</button>
                 </div>
-                <div class="book-container" id="container1">
-                    <div class="book" id="book1"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- العمل الثاني (عرضي) -->
-        <div class="work-item">
-            <div class="book-wrapper">
-                <div class="controls">
-                    <button class="nav-btn" onclick="prevPage('book2')">❯</button>
-                    <button class="nav-btn" onclick="nextPage('book2')">❮</button>
-                </div>
-                <div class="book-container" id="container2">
-                    <div class="book" id="book2"></div>
+                <div class="book-container">
+                    <div class="book" id="mainBook"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // إعدادات دقيقة جداً: استخدمنا الـ Ratio (النسبة) بدلاً من البكسل الثابت
-        const worksData = {
-            book1: {
-                prefix: "", 
-                count: 12, 
-                ratio: 0.7, // العرض 70% من الطول (طولي)
-            },
-            book2: {
-                prefix: "p", 
-                count: 16, 
-                ratio: 1.4, // العرض 140% من الطول (عرضي)
-            }
+        // إعدادات العمل الوحيد
+        const config = {
+            prefix: "", 
+            count: 12, // ينتهي عند 12.jpg
         };
 
-        const bookStates = { book1: 0, book2: 0 };
+        let currentPageIndex = 0;
 
-        function initBooks() {
-            for (let bookId in worksData) {
-                const data = worksData[bookId];
-                const bookElement = document.getElementById(bookId);
-                const container = document.getElementById('container' + bookId.slice(-1));
-                
-                // حساب الطول بناءً على العرض الحالي والنسبة (Ratio)
-                const currentWidth = container.offsetWidth;
-                const calculatedHeight = currentWidth / data.ratio;
-                
-                container.style.height = calculatedHeight + 'px';
-                bookElement.style.height = calculatedHeight + 'px';
+        function initBook() {
+            const bookElement = document.getElementById('mainBook');
+            const totalPages = Math.ceil(config.count / 2);
 
-                const totalPages = Math.ceil(data.count / 2);
+            for (let i = 0; i < totalPages; i++) {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page';
+                pageDiv.style.zIndex = totalPages - i;
 
-                for (let i = 0; i < totalPages; i++) {
-                    const pageDiv = document.createElement('div');
-                    pageDiv.className = 'page';
-                    pageDiv.style.height = calculatedHeight + 'px';
-                    pageDiv.style.zIndex = totalPages - i;
+                const frontImg = `${i * 2 + 1}${config.prefix}.jpg`;
+                const backImg = `${i * 2 + 2}${config.prefix}.jpg`;
 
-                    const frontImg = `${i * 2 + 1}${data.prefix}.jpg`;
-                    const backImg = `${i * 2 + 2}${data.prefix}.jpg`;
+                pageDiv.innerHTML = `
+                    <div class="page-face front"><img src="${frontImg}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${i*2+1}'"></div>
+                    <div class="page-face back"><img src="${backImg}" onerror="this.src='https://via.placeholder.com/400x600?text=Page+${i*2+2}'"></div>
+                `;
 
-                    pageDiv.innerHTML = `
-                        <div class="page-face front"><img src="${frontImg}" onerror="this.src='https://via.placeholder.com/400x600?text=Image+Missing'"></div>
-                        <div class="page-face back"><img src="${backImg}" onerror="this.src='https://via.placeholder.com/400x600?text=Image+Missing'"></div>
-                    `;
+                pageDiv.addEventListener('click', () => {
+                    if (pageDiv.classList.contains('flipped')) prevPage();
+                    else nextPage();
+                });
 
-                    pageDiv.addEventListener('click', () => {
-                        if (pageDiv.classList.contains('flipped')) prevPage(bookId);
-                        else nextPage(bookId);
-                    });
-
-                    bookElement.appendChild(pageDiv);
-                }
+                bookElement.appendChild(pageDiv);
             }
         }
 
-        function nextPage(bookId) {
-            const book = document.getElementById(bookId);
-            const pages = book.getElementsByClassName('page');
-            const currentIndex = bookStates[bookId];
-
-            if (currentIndex < pages.length) {
-                const page = pages[currentIndex];
+        function nextPage() {
+            const pages = document.getElementsByClassName('page');
+            if (currentPageIndex < pages.length) {
+                const page = pages[currentPageIndex];
                 page.classList.add('flipped');
-                setTimeout(() => { page.style.zIndex = currentIndex + 1; }, 300);
-                bookStates[bookId]++;
+                setTimeout(() => { page.style.zIndex = currentPageIndex + 1; }, 300);
+                currentPageIndex++;
             }
         }
 
-        function prevPage(bookId) {
-            const book = document.getElementById(bookId);
-            const pages = book.getElementsByClassName('page');
-            const currentIndex = bookStates[bookId];
-
-            if (currentIndex > 0) {
-                bookStates[bookId]--;
-                const page = pages[bookStates[bookId]];
+        function prevPage() {
+            const pages = document.getElementsByClassName('page');
+            if (currentPageIndex > 0) {
+                currentPageIndex--;
+                const page = pages[currentPageIndex];
                 page.classList.remove('flipped');
-                setTimeout(() => { page.style.zIndex = pages.length - bookStates[bookId]; }, 300);
+                setTimeout(() => { page.style.zIndex = pages.length - currentPageIndex; }, 300);
             }
         }
 
-        // دعم السحب للهاتف
+        // دعم السحب باليد للهاتف
         let touchStartX = 0;
-        let currentTouchBookId = null;
+        document.getElementById('mainBook').addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
 
-        document.querySelectorAll('.book').forEach(book => {
-            book.addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-                currentTouchBookId = book.id;
-            }, {passive: true});
+        document.getElementById('mainBook').addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextPage();
+                else prevPage();
+            }
+        }, {passive: true});
 
-            book.addEventListener('touchend', e => {
-                const touchEndX = e.changedTouches[0].screenX;
-                const diff = touchStartX - touchEndX;
-                if (Math.abs(diff) > 50) {
-                    if (diff > 0) nextPage(currentTouchBookId);
-                    else prevPage(currentTouchBookId);
-                }
-            }, {passive: true});
-        });
-
-        // إعادة حساب المقاسات عند تغيير حجم الشاشة (Rotation)
-        window.addEventListener('resize', () => {
-            location.reload(); 
-        });
-
-        window.onload = initBooks;
+        window.onload = initBook;
     </script>
 </body>
 </html>
